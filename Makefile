@@ -16,7 +16,7 @@ BLINK = ${SRC}/blink
 CCFLAGS = -Wall -g -mmcu=atmega328p -nostdlib
 
 blink: ${BLINK}/main.c
-	${CC} ${CCFLAGS} ${BLINK}/main.c -o ${BLINK}/out.elf
+	${CC} ${CCFLAGS} ${BLINK}/main.c -o ${BLINK}/out.elf -I${INCLUDE}
 
 
 
