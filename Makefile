@@ -11,14 +11,15 @@ INCLUDE = ./inc
 
 
 BLINK_DIR = ${SRC}/blink
+ENTRY_DIR = ${SRC}/entry
 
-CCFLAGS = -mmcu=atmega328p -Wall -Os
+CCFLAGS = -mmcu=atmega328p -Wall -Os -nostdlib
 LDFLAGS = -e _start
 
-OBJECTS = ${BLINK_DIR}/entry.o ${BLINK_DIR}/main.o
+OBJECTS = ${ENTRY_DIR}/entry.o ${BLINK_DIR}/main.o
 
-${BLINK_DIR}/entry.o: ${BLINK_DIR}/entry.s
-	${AS} -g -c -mmcu=atmega328p -I${INCLUDE} -o ${BLINK_DIR}/entry.o ${BLINK_DIR}/entry.s
+${ENTRY_DIR}/entry.o: ${ENTRY_DIR}/entry.s
+	${AS} -g -c -mmcu=atmega328p -I${INCLUDE} -o ${ENTRY_DIR}/entry.o ${ENTRY_DIR}/entry.s
 
 ${BLINK_DIR}/main.o: ${BLINK_DIR}/main.c
 	${CC} ${CCFLAGS} -o ${BLINK_DIR}/main.o ${BLINK_DIR}/main.c -I${INCLUDE}
@@ -44,3 +45,7 @@ clean:
 	rm ${BLINK_DIR}/*.o
 	rm ${BLINK_DIR}/*.elf
 	rm ${BLINK_DIR}/*.hex
+
+	rm ${ENTRY_DIR}/*.o
+	rm ${ENTRY_DIR}/*.elf
+	rm ${ENTRY_DIR}/*.hex
