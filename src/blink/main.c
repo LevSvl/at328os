@@ -1,20 +1,21 @@
 #include "types.h"
 #include "m328Pdef.h"
 
-void sleep(int n)
+
+void _sleep()
 {
-    for(int i = 0; i < 1000000*n; i++) ;
+    for(volatile long i = 0; i < 70000; i++) ;
 }
 
 int main()
 {
     // LED_BUILTIN - PB5
-
+    DDRB |= (1 << PINB5);
     while(1) {
-        PINB = (1 << PINB5);   
-        sleep(20);
-        PINB = (0 << PINB5);   
-        sleep(20);
+        PORTB |= (1 << PINB5);
+        _sleep();
+        PORTB &= (0 << PINB5);   
+        _sleep();
     }
   
     return 0;
