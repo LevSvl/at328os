@@ -10,27 +10,13 @@ SRC = ./src
 INCLUDE = ./inc
 
 
-BLINK = ${SRC}/blink
+BLINK_DIR = ${SRC}/blink
 
-.PHONY: clean
+CCFLAGS = -mmcu=atmega328p -Wall -Os 
 
-CCFLAGS = -Wall -g -mmcu=atmega328p -nostdlib -ffreestanding -flto -fuse-linker-plugin -Wl,--gc-sections
-
-
-EEPROM_FLAGS += -v
-EEPROM_FLAGS += -O ihex
-EEPROM_FLAGS += -j .eeprom --set-section-flags=.eeprom=alloc,load
-EEPROM_FLAGS += --no-change-warnings
-EEPROM_FLAGS += --change-section-lma .eeprom=0
-
-OTHER_FLAGS += -O ihex
-OTHER_FLAGS += -R .eeprom
-
-
-blink: ${BLINK}/main.c
-	${CC} ${CCFLAGS} ${BLINK}/main.c -o ${BLINK}/out.elf -I${INCLUDE}
-	${OBJCOPY} ${EEPROM_FLAGS} ${BLINK}/out.elf ${BLINK}/out.eep
-	${OBJCOPY} ${OTHER_FLAGS} ${BLINK}/out.elf ${BLINK}/out.hex
+blink: ${BLINK_DIR}/main.c
+	${CC} ${CCFLAGS} -o ${BLINK_DIR}/out.elf ${BLINK_DIR}/main.c -I${INCLUDE}
+	${OBJCOPY} -j .text -j .data -O ihex ${BLINK_DIR}/out.elf ${BLINK_DIR}/out.hex
 
 
 
@@ -43,5 +29,9 @@ flash-%: %
 	avrdude -C${DUDECONF} ${DUDEOPTS} -P${COM} -Uflash:w:${SRC}/$</out.hex:i
 
 
+.PHONY: clean
+
 clean:
-	rm  
+	rm ${BLINK_DIR}/*.o
+	rm ${BLINK_DIR}/*.elf
+	rm ${BLINK_DIR}/*.hex
