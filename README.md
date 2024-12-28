@@ -5,6 +5,6 @@
 ```
 
 sudo apt-get update
-sudo apt-get install gcc-avr binutils
+sudo apt-get install gcc-avr binutils avrdude
 
 ```
