@@ -12,10 +12,19 @@ INCLUDE = ./inc
 
 BLINK_DIR = ${SRC}/blink
 
-CCFLAGS = -mmcu=atmega328p -Wall -Os 
+CCFLAGS = -mmcu=atmega328p -Wall -Os
+LDFLAGS = -e _start
 
-blink: ${BLINK_DIR}/main.c
-	${CC} ${CCFLAGS} -o ${BLINK_DIR}/out.elf ${BLINK_DIR}/main.c -I${INCLUDE}
+OBJECTS = ${BLINK_DIR}/entry.o ${BLINK_DIR}/main.o
+
+${BLINK_DIR}/entry.o: ${BLINK_DIR}/entry.s
+	${AS} -g -c -mmcu=atmega328p -I${INCLUDE} -o ${BLINK_DIR}/entry.o ${BLINK_DIR}/entry.s
+
+${BLINK_DIR}/main.o: ${BLINK_DIR}/main.c
+	${CC} ${CCFLAGS} -o ${BLINK_DIR}/main.o ${BLINK_DIR}/main.c -I${INCLUDE}
+
+blink: ${OBJECTS}
+	${LD} ${LDFLAGS} -Ttext 0x0 ${OBJECTS} -o ${BLINK_DIR}/out.elf
 	${OBJCOPY} -j .text -j .data -O ihex ${BLINK_DIR}/out.elf ${BLINK_DIR}/out.hex
 
 
