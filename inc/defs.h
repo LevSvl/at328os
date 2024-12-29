@@ -5,4 +5,7 @@
 void usart_init();
 void usart_transmit(uint8_t data);
 
+// led.c
+int blink();
+
 #endif  /* DEFS_H */
