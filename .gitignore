@@ -4,3 +4,5 @@ tmp.*
 *.hex
 *.eep
 *.o
+tmp
+*.lst
