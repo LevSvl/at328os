@@ -48,10 +48,14 @@ DUDEOPTS += -carduino -b57600 -D -P${COM}
 DUDEOPTS += -Uflash:w:${SRC}/main/out.hex:i
 
 MINICOM = minicom
-MINICOMOPTS = -b 9600 -D /dev/ttyS3 --8bit
+MINICOMOPTS += -D /dev/ttyS3 -b 9600
+MINICOMOPTS += -F addcarreturn=on
 
 flash: kernel
 	${DUDE} -C${DUDECONF} ${DUDEOPTS}	
+	${MINICOM} ${MINICOMOPTS}
+
+serial:
 	${MINICOM} ${MINICOMOPTS}
 
 
