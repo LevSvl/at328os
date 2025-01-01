@@ -1,0 +1,1 @@
+#define PROGMEM __attribute__((__progmem__))

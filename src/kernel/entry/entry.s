@@ -9,9 +9,9 @@ _start:
     # allocate 4096 bytes for stack
     nop
 
-    ldi r16, 0x5f
+    ldi r16, 0xff
     out SPL, r16
-    ldi r16, 0x04
+    ldi r16, 0x08
     out SPH, r16
     
     jmp main

@@ -1,8 +1,13 @@
-#include "types.h"
+#include <avr/pgmspace.h>
+
+// #include "types.h"
 #include "m328Pdef.h"
 #include "defs.h"
+// #include "mem.h"
 
-void nop()
+const char greet[14] PROGMEM = "kernel start\n";
+
+static void nop()
 {
     while (1);
 }
@@ -10,5 +15,13 @@ void nop()
 int main()
 {
     usart_init();
+
+    char g[14];
+    cpy_f2s(g, greet, 14);
+
+    printf(g);
+
+    blink();
     nop();
+    return 0;
 }
