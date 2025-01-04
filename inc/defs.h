@@ -2,7 +2,7 @@
 #define DEFS_H
 
 // sram.c
-void cpy_f2s(void *dst, void *src, uint32_t sz);
+void cpy_f2s(char *dst, uint16_t src, uint32_t sz);
 
 // usart.c
 void usart_init();

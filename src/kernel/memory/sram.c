@@ -1,11 +1,16 @@
-#include <avr/pgmspace.h>
+#include "types.h"
 
-void cpy_f2s(void *dst, void *src, uint32_t sz)
+#include "defs.h"
+
+extern void pgm_read_byte();
+
+
+void cpy_f2s(char *dst, uint16_t src, uint32_t sz)
 {
     uint32_t i;
 
     for(i = 0; i < sz; i++){
-        uint8_t byte = (uint8_t)pgm_read_byte((uint8_t)src + i);
-        *((uint8_t *)dst + i) = byte;
+        char byte = ((char (*)(uint16_t))pgm_read_byte)(src + i);
+        *(dst + i) = byte;
     }
 }
