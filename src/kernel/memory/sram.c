@@ -1,16 +1,22 @@
 #include "types.h"
-
 #include "defs.h"
 
-extern void pgm_read_byte();
+extern void pgm_read_word();
 
-
-void cpy_f2s(char *dst, uint16_t src, uint32_t sz)
+void cpy_f2s(char *dst, char *src, uint32_t nbytes)
 {
-    uint32_t i;
+    uint16_t (*pgm_rw)(uint16_t);
+    uint32_t nwords;
 
-    for(i = 0; i < sz; i++){
-        char byte = ((char (*)(uint16_t))pgm_read_byte)(src + i);
-        *(dst + i) = byte;
+    nwords = nbytes/2;
+    pgm_rw = ((uint16_t (*)(uint16_t))pgm_read_word);
+
+    for(uint32_t i = 0; i < nwords; i++){
+        uint16_t word_addr = ((uint16_t)(src + i))*2;
+        uint16_t word = pgm_rw(word_addr);
+
+        dst[i*2] = (uint8_t)(word >> 8);
+        dst[i*2 + 1] = (uint8_t)word;
     }
+
 }

@@ -17,7 +17,7 @@ KERNEL_DIR = ${SRC}/main
 PRINTF_DIR = ${SRC}/printf
 MEM_DIR = ${SRC}/memory
 
-CCFLAGS = -mmcu=atmega328p -Wall -O0 -nostdlib -ffreestanding -g -c
+CCFLAGS = -mmcu=atmega328p -Wall -Os -nostdlib -ffreestanding -g -c
 LDFLAGS = -e _start -m avr5 -nostdlib
 
 OBJECTS = ${ENTRY_DIR}/entry.o \
@@ -35,13 +35,13 @@ ${ENTRY_DIR}/entry.o: ${ENTRY_DIR}/entry.s
 	$(CC) $(CCFLAGS) -o $@ $< -I$(INCLUDE)
 
 %.o: %.s
-	${AS} -g -c -Wall -mmcu=atmega328p -I${INCLUDE} -o $@ $<
+	${AS} -g -c -mmcu=atmega328p -I${INCLUDE} -o $@ $<
 
 
 kernel: ${OBJECTS}
 	${LD} ${LDFLAGS} ${OBJECTS} -o ${KERNEL_DIR}/out.elf
-	${OBJCOPY} -O ihex ${KERNEL_DIR}/out.elf ${KERNEL_DIR}/out.hex
-	$(OBJDUMP) -D ${KERNEL_DIR}/out.elf > ${KERNEL_DIR}/out.lst
+	${OBJCOPY} -R .eeprom -O ihex ${KERNEL_DIR}/out.elf ${KERNEL_DIR}/out.hex
+	$(OBJDUMP) -S ${KERNEL_DIR}/out.elf > ${KERNEL_DIR}/out.lst
 
 DUDE = avrdude
 DUDECONF = avrdude.conf
