@@ -1,16 +1,13 @@
-// #include <avr/pgmspace.h>
-
 #include "types.h"
-#include "m328Pdef.h"
 #include "defs.h"
-// #include "mem.h"
+#include "mem.h"
 
 static void nop()
 {
     while (1);
 }
 
-__attribute__ ((__progmem__)) const char fstr[] = "kernel";
+PROGMEM const char fstr[] = "kernel";
 
 int main()
 {
