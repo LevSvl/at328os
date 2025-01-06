@@ -7,18 +7,16 @@ static void nop()
     while (1);
 }
 
-PROGMEM const char fstr[] = "kernel";
+PROGMEM const char fstr[] = "kslkernelll";
+#define debug (({ cpy_f2s(fstr, fstr, ( sizeof(fstr) %2 ? (sizeof(fstr) + 1): sizeof(fstr))); fstr;}))
+#define ERR blink
+#define OK nop
 
 int main()
 {
     usart_init();
+    printf(debug);
 
-    char g[8];
-    cpy_f2s(g, fstr, 8);
-
-    printf(g);
-
-    blink();
-    nop();
+    ERR();
     return 0;
 }
