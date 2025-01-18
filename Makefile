@@ -66,13 +66,7 @@ serial:
 .PHONY: clean
 
 clean:
-	rm ${LED_DIR}/*.o
-	rm ${ENTRY_DIR}/*.o
-	rm ${USART_DIR}/*.o
-	rm ${PRINTF_DIR}/*.o
-	rm ${MEM_DIR}/*.o
-
-	rm ${KERNEL_DIR}/*.o
+	rm ${OBJECTS}
 	rm ${KERNEL_DIR}/*.elf
 	rm ${KERNEL_DIR}/*.hex
 	rm ${KERNEL_DIR}/*.lst
