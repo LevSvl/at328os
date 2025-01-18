@@ -1,15 +1,16 @@
 #include <stdarg.h>
+#include <avr/pgmspace.h>
 
-#include "types.h"
 #include "__udivmodsi4.c"
 #include "defs.h"
-
- __attribute__ ((aligned (32))) static char digits[] = "0123456789abcdef";
 
 static int 
 convert(unsigned long x, int base, char buf[16])
 {
+  
+  char digits[] = "0123456789abcdef";
   int i;
+
 
   i = 0;
   do{
@@ -60,7 +61,7 @@ void
 printf(char* fmt, ...)
 {
   va_list ap;
-  char* p;
+  char p;
   union fmtval
   {
     int ival; // целое
@@ -71,12 +72,13 @@ printf(char* fmt, ...)
 
   va_start(ap, fmt);
 
-  for(p = fmt; *p ; p++){
-    if (*p != '%'){
-      usart_transmit(*p);
+  while((p = pgm_read_byte(fmt))){
+    if (p != '%'){
+      usart_transmit(p);
+      fmt++;
       continue;
     }
-    switch (*++p)
+    switch (pgm_read_byte(fmt + 1))
     {
     case 'd':
       fmtval.ival = va_arg(ap, int);
@@ -95,6 +97,8 @@ printf(char* fmt, ...)
       printptr(fmtval.ptrval);
       break;
     }
+
+    fmt++;
   }
   va_end(ap);
 }
