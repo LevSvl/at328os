@@ -5,6 +5,6 @@
 ```
 
 sudo apt-get update
-sudo apt-get install gcc-avr binutils-avr avrdude minicom
+sudo apt-get install gcc-avr binutils-avr avrdude minicom make
 
 ```
