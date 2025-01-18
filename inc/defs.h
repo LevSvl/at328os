@@ -9,7 +9,7 @@ void usart_init();
 void usart_transmit(uint8_t data);
 
 // printf.c
-void printf(char* fmt, ...);
+void printf_P(char* fmt, ...);
 
 // led.c
 int blink();

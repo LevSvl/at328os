@@ -58,7 +58,7 @@ printptr(unsigned long n)
 }
 
 void 
-printf(char* fmt, ...)
+printf_P(char* fmt, ...)
 {
   va_list ap;
   char p;

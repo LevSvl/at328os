@@ -9,7 +9,7 @@ int main()
 {
     usart_init();
 
-    printf(PSTR("lerme\0"));
+    printf_P(PSTR("lerme\0"));
 
     ERR();
 
