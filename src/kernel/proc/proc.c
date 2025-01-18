@@ -1,7 +1,6 @@
-#include "types.h"
-#include "types.h"
+#include <avr/pgmspace.h>
+
 #include "defs.h"
-#include "mem.h"
 
 
 #define NPROC 2
@@ -42,6 +41,7 @@ void proc_init()
     struct proc *p;
 
     for(int i = 0; i < NPROC; i++){
+        printf_P(PSTR("proc init\n"));
         p = &proc_list[i];
         p->pid = i;
         p->state = SLEEPING;

@@ -16,6 +16,7 @@ USART_DIR = ${SRC}/usart
 KERNEL_DIR = ${SRC}/main
 PRINTF_DIR = ${SRC}/printf
 MEM_DIR = ${SRC}/memory
+PROC_DIR = ${SRC}/proc
 
 CCFLAGS = -mmcu=atmega328p -Wall -Os -nostdlib -ffreestanding -g -c
 LDFLAGS = -e _start -m avr5 -nostdlib
@@ -26,7 +27,8 @@ OBJECTS = ${ENTRY_DIR}/entry.o \
 	${PRINTF_DIR}/printf.o \
 	${KERNEL_DIR}/main.o \
 	${MEM_DIR}/sram.o \
-	${MEM_DIR}/progmem.o
+	${MEM_DIR}/progmem.o \
+	${PROC_DIR}/proc.o
 
 ${ENTRY_DIR}/entry.o: ${ENTRY_DIR}/entry.s
 	${AS} -g -c -Wall -mmcu=atmega328p -I${INCLUDE} -o ${ENTRY_DIR}/entry.o ${ENTRY_DIR}/entry.s

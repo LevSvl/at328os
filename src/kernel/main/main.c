@@ -11,8 +11,10 @@ int main()
 
     printf_P(PSTR("lerme\0"));
 
-    ERR();
+    proc_init();
 
+
+    ERR();
     OK();
     return 0;
 }

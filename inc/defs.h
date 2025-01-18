@@ -14,4 +14,7 @@ void printf_P(char* fmt, ...);
 // led.c
 int blink();
 
+// proc.c
+void proc_init();
+
 #endif  /* DEFS_H */
