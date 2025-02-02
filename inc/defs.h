@@ -9,9 +9,12 @@ void usart_init();
 void usart_transmit(uint8_t data);
 
 // printf.c
-void printf(char* fmt, ...);
+void printf_P(char* fmt, ...);
 
 // led.c
 int blink();
+
+// proc.c
+void proc_init();
 
 #endif  /* DEFS_H */

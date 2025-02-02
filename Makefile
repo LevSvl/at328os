@@ -16,47 +16,58 @@ USART_DIR = ${SRC}/usart
 KERNEL_DIR = ${SRC}/main
 PRINTF_DIR = ${SRC}/printf
 MEM_DIR = ${SRC}/memory
+PROC_DIR = ${SRC}/proc
 
-CCFLAGS = -mmcu=atmega328p -Wall -Os -nostdlib -ffreestanding -g -c
-LDFLAGS = -e _start -m avr5 -nostdlib
+CCFLAGS = -mmcu=atmega328p -Os -g -mrelax -e _start -I$(INCLUDE) # -fno-stack-protector
 
-OBJECTS = ${ENTRY_DIR}/entry.o \
+ALLOBJECTS = ${ENTRY_DIR}/entry.o \
 	${USART_DIR}/usart.o \
 	${LED_DIR}/led.o \
 	${PRINTF_DIR}/printf.o \
 	${KERNEL_DIR}/main.o \
 	${MEM_DIR}/sram.o \
-	${MEM_DIR}/progmem.o
+	${MEM_DIR}/progmem.o \
+	${PROC_DIR}/proc.o \
+	${PROC_DIR}/swtch.o
+
+ASOBJECTS = ${ENTRY_DIR}/entry.o \
+	${MEM_DIR}/progmem.o \
+	${PROC_DIR}/swtch.o
+
+SOURCES = ${USART_DIR}/usart.c \
+	${LED_DIR}/led.c \
+	${PRINTF_DIR}/printf.c \
+	${KERNEL_DIR}/main.c \
+	${MEM_DIR}/sram.c \
+	${PROC_DIR}/proc.c \
 
 ${ENTRY_DIR}/entry.o: ${ENTRY_DIR}/entry.s
-	${AS} -g -c -Wall -mmcu=atmega328p -I${INCLUDE} -o ${ENTRY_DIR}/entry.o ${ENTRY_DIR}/entry.s
-
-%.o: %.c
-	$(CC) $(CCFLAGS) -o $@ $< -I$(INCLUDE)
+	${AS} -g -mmcu=atmega328p -I${INCLUDE} -o ${ENTRY_DIR}/entry.o ${ENTRY_DIR}/entry.s -I$(INCLUDE)
 
 %.o: %.s
-	${AS} -g -c -mmcu=atmega328p -I${INCLUDE} -o $@ $<
+	${AS} -g -mmcu=atmega328p -I${INCLUDE} -o $@ $<
 
 
-kernel: ${OBJECTS}
-	${LD} ${LDFLAGS} ${OBJECTS} -o ${KERNEL_DIR}/out.elf
+kernel: ${SOURCES} ${ASOBJECTS}
+	${CC} ${CCFLAGS} -o ${KERNEL_DIR}/out.elf  ${SOURCES} ${ASOBJECTS}
 	${OBJCOPY} -R .eeprom -O ihex ${KERNEL_DIR}/out.elf ${KERNEL_DIR}/out.hex
 	$(OBJDUMP) -S ${KERNEL_DIR}/out.elf > ${KERNEL_DIR}/out.lst
+	$(OBJDUMP) -t ${KERNEL_DIR}/out.elf | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > kernel.sym
 
 DUDE = avrdude
 DUDECONF = avrdude.conf
-COM = /dev/ttyS3
+COM = /dev/ttyS6
 
-DUDEOPTS += -C${DUDECONF} -patmega328p
+DUDEOPTS += -patmega328p
 DUDEOPTS += -carduino -b57600 -D -P${COM}
 DUDEOPTS += -Uflash:w:${SRC}/main/out.hex:i
 
 MINICOM = minicom
-MINICOMOPTS += -D /dev/ttyS3 -b 9600
+MINICOMOPTS += -D /dev/ttyS6 -b 9600
 MINICOMOPTS += -F addcarreturn=on
 
 flash: kernel
-	${DUDE} -C${DUDECONF} ${DUDEOPTS}	
+	${DUDE} ${DUDEOPTS}	
 	${MINICOM} ${MINICOMOPTS}
 
 serial:
@@ -66,13 +77,8 @@ serial:
 .PHONY: clean
 
 clean:
-	rm ${LED_DIR}/*.o
-	rm ${ENTRY_DIR}/*.o
-	rm ${USART_DIR}/*.o
-	rm ${PRINTF_DIR}/*.o
-	rm ${MEM_DIR}/*.o
-
-	rm ${KERNEL_DIR}/*.o
+	rm ${ALLOBJECTS}
 	rm ${KERNEL_DIR}/*.elf
 	rm ${KERNEL_DIR}/*.hex
 	rm ${KERNEL_DIR}/*.lst
+

@@ -1,24 +1,21 @@
-#include "types.h"
+#include <avr/pgmspace.h>
+
 #include "defs.h"
-#include "mem.h"
 
-PROGMEM const char fstr[] = "kernel";
+#define OK() while (1) 
 
-static void nop()
+char a[] = {0xAA,0xBB, 0xCC, 0xDD};
+
+void main()
 {
-    while (1);
-}
-
-#define ERR blink
-#define OK nop
-#define debug (({char buf[100]; cpy_f2s(buf, fstr, ( sizeof(fstr) %2 ? (sizeof(fstr) + 1): sizeof(fstr))); buf;}))
-
-int main()
-{
+    // sram_init();
     usart_init();
+    proc_init();
 
-    ERR();
+    create_task((uint16_t)blink);
+    scheduler();
+    // blink();
 
+    while(1);
     OK();
-    return 0;
 }
