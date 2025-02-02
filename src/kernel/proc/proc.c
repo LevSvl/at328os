@@ -59,7 +59,7 @@ void proc_init()
         p = &proc_list[i];
         p->pid = i;
         p->state = SLEEPING;
-        p->stack = 0x7F0;
+        p->stack = USTACK(i);
 
         p->context.spl = low(p->stack);
         p->context.sph = high(p->stack);
