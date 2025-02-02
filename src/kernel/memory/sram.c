@@ -1,6 +1,9 @@
 #include "types.h"
 #include "defs.h"
 
+extern char __data_start[], __data_end[];
+extern char __data_img_start[];
+
 extern void pgm_read_word();
 
 void cpy_f2s(char *dst, const char *src, uint32_t nbytes)
@@ -19,4 +22,10 @@ void cpy_f2s(char *dst, const char *src, uint32_t nbytes)
         dst[i*2 + 1] = (uint8_t)word;
     }
 
+}
+
+void sram_init()
+{
+    // cpy_f2s((char *)__data_start, (char*)__data_img_start,
+    //  (uint32_t)(__data_end - __data_start));
 }

@@ -1,69 +1,141 @@
 #include <avr/pgmspace.h>
 
+#include "mem.h"
 #include "defs.h"
 
+#define NPROC 1
 
-#define NPROC 2
-enum state{RUNNING, SLEEPING};
+extern char pgm_read_word[];
 
-// PC, SP and Calle-saved registers
+enum state{RUNNING, SLEEPING, READY};
+
+// PC, SP and calle-saved registers
 struct context
 {
-    uint16_t pc;
     uint8_t spl;
     uint8_t sph;
-
-    uint8_t r18;
-    uint8_t r19;
-    uint8_t r20;
-    uint8_t r21;
-    uint8_t r22;
-    uint8_t r23;
-    uint8_t r24;
-    uint8_t r25;
-    uint8_t r26;
-    uint8_t r27;
-    uint8_t r30;
-    uint8_t r31;
+    uint8_t r2;
+    uint8_t r3;
+    uint8_t r4;
+    uint8_t r5;
+    uint8_t r6;
+    uint8_t r7;
+    uint8_t r8;
+    uint8_t r9;
+    uint8_t r10;
+    uint8_t r11;
+    uint8_t r12;
+    uint8_t r13;
+    uint8_t r14;
+    uint8_t r15;
+    uint8_t r16;
+    uint8_t r17;
+    uint8_t r28;
+    uint8_t r29;
 };
 
 
 struct proc {
     int pid;
     enum state state;
-    struct context *context;
+    uint16_t stack;
+    struct context context;
 };
 
 struct proc proc_list[NPROC];
+struct proc sched_proc;
+
+extern void swtch(struct context *old_ctxt, struct context *new_ctxt);
 
 void proc_init()
 {
     struct proc *p;
 
-    for(int i = 0; i < NPROC; i++){
-        printf_P(PSTR("proc init\n"));
+    sched_proc.state = RUNNING;
+
+    for(int i = 0; i < NPROC; i++){     
+        printf("proc init %d\n", i);
+
         p = &proc_list[i];
         p->pid = i;
         p->state = SLEEPING;
+        p->stack = 0x7F0;
+
+        p->context.spl = low(p->stack);
+        p->context.sph = high(p->stack);
     }
 }
 
 void scheduler()
 {
-    struct proc *p;
+    struct proc *up, *sch_p;
+    
+    sch_p = &sched_proc;
 
-    for(int i = 0; i < NPROC; i++){
-        p = &proc_list[i];
+    while(1){
+        for(int i = 0; i < NPROC; i++){
+            up = &proc_list[i];
+            if(up->state == READY){
+                sch_p->state = SLEEPING;
+                up->state = RUNNING;
+                swtch(&sch_p->context, &up->context);
 
-        if(p->state == SLEEPING){
-            p->state = RUNNING;
-            runproc(p);
-            p->state = SLEEPING;
+                // printf("blink addr 0x%x%x\n", high((uint16_t)blink), low((uint16_t)blink));
+                // printf("stack %x  %x\n", up->context.sph,  up->context.spl);  
+
+
+                // printf("sched stack addr high %x\n", sch_p->context.sph); 
+                // printf("sched stack addr low %x\n", sch_p->context.spl);
+
+                printf("sched stack addr  %x\n", *((uint8_t *)0x8fA)); 
+                printf("sched stack addr  %x\n", *(uint8_t *)0x8fB);
+                printf("sched stack addr  %x\n", *(uint8_t *)0x8fC);
+
+                printf("sched stack addr  %x\n", *(uint8_t *)0x8fD);
+                printf("sched stack addr  %x\n", *(uint8_t *)0x8fE);
+                printf("sched stack addr  %x\n", *(uint8_t *)0x8fF);
+                printf("sched stack addr  %x\n", *(uint8_t *)0x900);
+                // printf("ret addr low %x\n", sch_p->context.spl);  
+                
+                // while(1);
+            }
         }
     }
 }
 
-int runproc(struct proc *p)
+int create_task(uint16_t task_addr)
 {
+    struct proc *up;
+    int found = 0;
 
+    for(int i = 0; i < NPROC; i++){
+        up = &proc_list[i];
+        if(up->state == SLEEPING){
+            found = 1;
+            break;
+        }
+    }
+
+    if(!found)
+        return -1;
+
+    uint16_t new_stack = up->stack-3;
+    up->context.spl = low(new_stack);
+    up->context.sph = high(new_stack);
+    up->stack = new_stack;
+
+    new_stack += 1;
+    *((uint8_t *)(new_stack)) = high(task_addr);
+    new_stack += 1;
+    *((uint8_t *)(new_stack)) = low(task_addr);
+    
+    up->state = READY;
+
+
+    printf("here %x\n", low(task_addr));
+
+    // while(1) ;
+    
+    
+    return 0;
 }

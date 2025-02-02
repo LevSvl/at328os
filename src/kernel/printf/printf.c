@@ -4,11 +4,11 @@
 #include "__udivmodsi4.c"
 #include "defs.h"
 
+char digits[] = "0123456789abcdef";
+
 static int 
 convert(unsigned long x, int base, char buf[16])
 {
-  
-  char digits[] = "0123456789abcdef";
   int i;
 
 
@@ -21,7 +21,7 @@ convert(unsigned long x, int base, char buf[16])
 }
 
 static void 
-printint(int n, int base, int sign)
+printint(uint16_t n, int base, int sign)
 {
   char buf[16];
   int i;
@@ -31,10 +31,10 @@ printint(int n, int base, int sign)
     x = -n;
   else
     x = n;
-  
+
   i = 0;
   i = convert(x, base, buf);
-  
+
   if (sign)
     buf[i++] = '-';
 
@@ -62,13 +62,10 @@ printf_P(char* fmt, ...)
 {
   va_list ap;
   char p;
-  union fmtval
-  {
-    int ival; // целое
-    double bval; // дробь
-    char* sval; // символ
-    unsigned long ptrval; // указатель
-  } fmtval;
+  int ival; // ?????
+  double bval; // ?????
+  char* sval; // ??????
+  unsigned long ptrval; // ?????????
 
   va_start(ap, fmt);
 
@@ -78,27 +75,71 @@ printf_P(char* fmt, ...)
       fmt++;
       continue;
     }
-    switch (pgm_read_byte(fmt + 1))
+    switch (pgm_read_byte(++fmt))
     {
     case 'd':
-      fmtval.ival = va_arg(ap, int);
-      printint(fmtval.ival, 10, 1);
+      ival = va_arg(ap, int);
+      printint(ival, 10, 1);
       break;
     case 'f':
       break;
     case 'x':
-      fmtval.ival = va_arg(ap, int);
-      printint(fmtval.ival, 16, 1);
+      ival = va_arg(ap, int);
+      printint(ival, 16, 1);
       break;
     case 's':
       break;
     case 'p':
-      fmtval.ptrval = va_arg(ap, unsigned long);
-      printptr(fmtval.ptrval);
+      ptrval = va_arg(ap, unsigned long);
+      printptr(ptrval);
       break;
     }
-
     fmt++;
+  }
+  va_end(ap);
+}
+
+void 
+printf(char* fmt, ...)
+{
+  va_list ap;
+  char *p;
+  int ival;
+  double bval; 
+  char* sval; 
+  unsigned long ptrval;
+
+  p = fmt;
+
+  va_start(ap, fmt);
+
+  while(*p != 0){
+    if (*p != '%'){
+      usart_transmit(*p);
+      p++;
+      continue;
+    }
+    p++;
+    switch (*p)
+    {
+    case 'd':
+      ival = va_arg(ap, int);
+      printint(ival, 10, 1);
+      break;
+    case 'f':
+      break;
+    case 'x':
+      ival = va_arg(ap, uint16_t);
+      printint(ival, 16, 1);
+      break;
+    case 's':
+      break;
+    case 'p':
+      ptrval = va_arg(ap, unsigned long);
+      printptr(ptrval);
+      break;
+    }
+    p++;
   }
   va_end(ap);
 }

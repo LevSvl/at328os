@@ -2,19 +2,20 @@
 
 #include "defs.h"
 
-#define ERR blink
 #define OK() while (1) 
 
-int main()
+char a[] = {0xAA,0xBB, 0xCC, 0xDD};
+
+void main()
 {
+    // sram_init();
     usart_init();
-
-    printf_P(PSTR("lerme\0"));
-
     proc_init();
 
+    create_task((uint16_t)blink);
+    scheduler();
+    // blink();
 
-    ERR();
+    while(1);
     OK();
-    return 0;
 }
