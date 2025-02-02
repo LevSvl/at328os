@@ -79,25 +79,6 @@ void scheduler()
                 sch_p->state = SLEEPING;
                 up->state = RUNNING;
                 swtch(&sch_p->context, &up->context);
-
-                // printf("blink addr 0x%x%x\n", high((uint16_t)blink), low((uint16_t)blink));
-                // printf("stack %x  %x\n", up->context.sph,  up->context.spl);  
-
-
-                // printf("sched stack addr high %x\n", sch_p->context.sph); 
-                // printf("sched stack addr low %x\n", sch_p->context.spl);
-
-                printf("sched stack addr  %x\n", *((uint8_t *)0x8fA)); 
-                printf("sched stack addr  %x\n", *(uint8_t *)0x8fB);
-                printf("sched stack addr  %x\n", *(uint8_t *)0x8fC);
-
-                printf("sched stack addr  %x\n", *(uint8_t *)0x8fD);
-                printf("sched stack addr  %x\n", *(uint8_t *)0x8fE);
-                printf("sched stack addr  %x\n", *(uint8_t *)0x8fF);
-                printf("sched stack addr  %x\n", *(uint8_t *)0x900);
-                // printf("ret addr low %x\n", sch_p->context.spl);  
-                
-                // while(1);
             }
         }
     }
@@ -130,12 +111,6 @@ int create_task(uint16_t task_addr)
     *((uint8_t *)(new_stack)) = low(task_addr);
     
     up->state = READY;
-
-
-    printf("here %x\n", low(task_addr));
-
-    // while(1) ;
-    
     
     return 0;
 }
